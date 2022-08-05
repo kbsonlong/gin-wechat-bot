@@ -7,6 +7,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kbsonlong/gin-wechat-bot/pkg/setting"
+	"github.com/kbsonlong/gin-wechat-bot/pkg/utils"
+	"github.com/kbsonlong/gin-wechat-bot/pkg/webhook"
 )
 
 // ref: https://swaggo.github.io/swaggo.io/declarative_comments_format/api_operation.html
@@ -20,29 +23,46 @@ import (
 // @Failure 400 {object} model.HTTPError
 // @Router /api/webhook/ [post]
 func Webhook(c *gin.Context) {
-	jsonData, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		panic(err)
-	}
-	var data interface{}
-	err1 := json.Unmarshal(jsonData, &data)
-	if err1 != nil {
-		panic(err1)
-	}
+	jsonData, _ := ioutil.ReadAll(c.Request.Body)
 
-	fmt.Println(jsonData)
-	fmt.Println(data)
-	fmt.Print()
-	// 钉钉
-	// wxchat.JsonPost(
-	// 	"https://oapi.dingtalk.com/robot/send?access_token=9bedcb0e28f938ae0ba0840145c09488431af917f366b0db317957ecce0bd9be",
-	// 	"{\"msgtype\": \"markdown\",\"markdown\": {\"title\":\"杭州天气gin\",\"text\": \"#### 杭州天气 @150XXXXXXXX \n > 9度,西北风1级,空气良89,相对温度73%\n > ![screenshot](https://img.alicdn.com/tfs/TB1NwmBEL9TBuNjy1zbXXXpepXa-2400-1218.png)\n > ###### 10点20分发布 [天气](https://www.dingtalk.com) \n\"},\"at\": {\"atMobiles\": [\"150XXXXXXXX\"],\"atUserIds\": [\"user123\"],\"isAtAll\": false}}",
-	// )
-	// 企微
-	// wxchat.JsonPost(
-	// 	"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=22ff440f-9b76-4e33-8ba6-63a283c31ee1",
-	// 	"{\"msgtype\": \"news\",\"news\": {\"articles\" : [{\"title\" : \"测试中秋节礼品领取\",\"description\" : \"今年中秋节公司有豪礼相送\",\"url\" : \"www.qq.com\",\"picurl\" : \"http://res.mail.qq.com/node/ww/wwopenmng/images/independent/doc/test_pic_msg1.png\"}]}}",
-	// )
+	data := make(map[string]interface{})
+
+	json.Unmarshal(jsonData, &data)
+
+	// 钉钉告警
+	if setting.Conf.BotConfig.DingTalkConfig.Enable {
+		result := utils.Parse(setting.Conf.BotConfig.DingTalkConfig.MessageTemplate, data)
+		// fmt.Print(result)
+
+		//func ReadAll(r io.Reader) ([]byte, error) {}
+		content, err := ioutil.ReadFile(setting.Conf.BotConfig.DingTalkConfig.TemplateFile)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf(string(content), result)
+		for _, secret := range setting.Conf.BotConfig.DingTalkConfig.Secrets {
+			fmt.Print(setting.Conf.BotConfig.DingTalkConfig.CallBackUrl, secret)
+			webhook_url := fmt.Sprint(setting.Conf.BotConfig.DingTalkConfig.CallBackUrl, secret)
+			fmt.Print(webhook_url)
+			webhook.JsonPost(webhook_url, fmt.Sprintf(string(content), result))
+		}
+	}
+	// 企微告警
+	if setting.Conf.BotConfig.WxChatConfig.Enable {
+		result := utils.Parse(setting.Conf.BotConfig.WxChatConfig.MessageTemplate, data)
+
+		content, err := ioutil.ReadFile(setting.Conf.BotConfig.WxChatConfig.TemplateFile)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf(string(content), result)
+		for _, secret := range setting.Conf.BotConfig.WxChatConfig.Secrets {
+			fmt.Print(setting.Conf.BotConfig.WxChatConfig.CallBackUrl, secret)
+			webhook_url := fmt.Sprint(setting.Conf.BotConfig.WxChatConfig.CallBackUrl, secret)
+			fmt.Print(webhook_url)
+			webhook.JsonPost(webhook_url, fmt.Sprintf(string(content), result))
+		}
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"msg": "ok",
 	})
