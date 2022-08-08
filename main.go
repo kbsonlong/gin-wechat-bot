@@ -6,7 +6,6 @@ import (
 )
 
 func main() {
-
-	routersInit := routers.InitRouter()
-	routersInit.Run()
+	r := routers.InitRouter()
+	r.Run()
 }

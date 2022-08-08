@@ -41,7 +41,7 @@ type WxChatConfig struct {
 }
 
 func init() {
-	viper.SetConfigFile("./conf/conf.yaml")
+	viper.SetConfigFile("conf/conf.yaml")
 
 	// 实时读取配置文件
 	// viper.WatchConfig()

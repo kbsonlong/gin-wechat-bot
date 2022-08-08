@@ -10,7 +10,7 @@ func InitRouter() gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	gin.SetMode("debug")
+	// gin.SetMode("debug")
 
 	apiv1 := r.Group("/api/v1")
 	{
