@@ -7,13 +7,12 @@ bot:
     keywords: []
     token: ''
     template_file: "templates/dingtalk.tmpl"
-    message_template: "templates/markdown.tmpl"
+
   wxchat:
-    enable: true
+    enable: false
     call_back_url: 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key='
     secrets:
       - 22ff440f-9b76-4e33-8ba6-63a283c31ee1
     keywords: []
     token: ''
     template_file: templates/wxchat.tmpl
-    message_template: templates/markdown.tmpl

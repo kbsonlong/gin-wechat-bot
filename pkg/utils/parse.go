@@ -2,7 +2,6 @@ package utils
 
 import (
 	"bytes"
-	"fmt"
 	"html/template"
 	"log"
 	"path"
@@ -11,7 +10,7 @@ import (
 func Parse(filepath string, data map[string]interface{}) string {
 	fileNameWithSuffix := path.Base(filepath)
 	t, err := template.New(fileNameWithSuffix).Funcs(template.FuncMap{
-		"add": add,
+		"add": Add,
 	}).ParseFiles(filepath)
 	if err != nil {
 		log.Print(err)
@@ -21,10 +20,10 @@ func Parse(filepath string, data map[string]interface{}) string {
 	var tpl bytes.Buffer
 
 	t.Execute(&tpl, data)
-	fmt.Print(tpl.String())
+	// fmt.Print(tpl.String())
 	return tpl.String()
 }
 
-func add(x, y int) int {
+func Add(x, y int) int {
 	return x + y
 }

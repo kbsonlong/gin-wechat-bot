@@ -31,36 +31,26 @@ func Webhook(c *gin.Context) {
 
 	// 钉钉告警
 	if setting.Conf.BotConfig.DingTalkConfig.Enable {
-		result := utils.Parse(setting.Conf.BotConfig.DingTalkConfig.MessageTemplate, data)
-		// fmt.Print(result)
+		res := utils.Parse(setting.Conf.BotConfig.DingTalkConfig.TemplateFile, data)
+		// fmt.Print(res)
 
-		//func ReadAll(r io.Reader) ([]byte, error) {}
-		content, err := ioutil.ReadFile(setting.Conf.BotConfig.DingTalkConfig.TemplateFile)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Printf(string(content), result)
 		for _, secret := range setting.Conf.BotConfig.DingTalkConfig.Secrets {
-			fmt.Print(setting.Conf.BotConfig.DingTalkConfig.CallBackUrl, secret)
+			// fmt.Println(setting.Conf.BotConfig.DingTalkConfig.CallBackUrl, secret)
 			webhook_url := fmt.Sprint(setting.Conf.BotConfig.DingTalkConfig.CallBackUrl, secret)
-			fmt.Print(webhook_url)
-			webhook.JsonPost(webhook_url, fmt.Sprintf(string(content), result))
+			// fmt.Println(webhook_url)
+			webhook.JsonPost(webhook_url, res)
 		}
 	}
 	// 企微告警
 	if setting.Conf.BotConfig.WxChatConfig.Enable {
-		result := utils.Parse(setting.Conf.BotConfig.WxChatConfig.MessageTemplate, data)
+		res := utils.Parse(setting.Conf.BotConfig.WxChatConfig.TemplateFile, data)
+		// fmt.Print(res)
 
-		content, err := ioutil.ReadFile(setting.Conf.BotConfig.WxChatConfig.TemplateFile)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Printf(string(content), result)
 		for _, secret := range setting.Conf.BotConfig.WxChatConfig.Secrets {
-			fmt.Print(setting.Conf.BotConfig.WxChatConfig.CallBackUrl, secret)
+			// fmt.Println(setting.Conf.BotConfig.WxChatConfig.CallBackUrl, secret)
 			webhook_url := fmt.Sprint(setting.Conf.BotConfig.WxChatConfig.CallBackUrl, secret)
-			fmt.Print(webhook_url)
-			webhook.JsonPost(webhook_url, fmt.Sprintf(string(content), result))
+			// fmt.Println(webhook_url)
+			webhook.JsonPost(webhook_url, res)
 		}
 	}
 	c.JSON(http.StatusOK, gin.H{

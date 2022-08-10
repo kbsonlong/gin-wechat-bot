@@ -3,6 +3,7 @@ package setting
 import (
 	"fmt"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
 
@@ -44,13 +45,13 @@ func init() {
 	viper.SetConfigFile("conf/conf.yaml")
 
 	// 实时读取配置文件
-	// viper.WatchConfig()
-	// viper.OnConfigChange(func(e fsnotify.Event) {
-	// 	fmt.Println("Config file changed:", e.Name)
-	// })
+	viper.WatchConfig()
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("Config file changed:", e.Name)
+	})
 
-	// // 获取环境变量
-	// viper.AutomaticEnv()
+	// 获取环境变量
+	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
 		fmt.Printf("viper.ReadInConfig failed, err:%v\n", err)
@@ -61,5 +62,5 @@ func init() {
 		fmt.Printf("viper.Unmarshal failed, err:%v\n", err)
 	}
 
-	fmt.Println(Conf.BotConfig)
+	// fmt.Println(Conf.BotConfig)
 }
