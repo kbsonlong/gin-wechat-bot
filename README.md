@@ -109,7 +109,7 @@ spec:
             defaultMode: 420
       containers:
         - name: webhook-bot
-          image: '969049650220.dkr.ecr.ap-east-1.amazonaws.com/webhook-bot:v1.0.1'
+          image: 'webhook-bot:v1.0.1'
           ports:
             - name: http-0
               containerPort: 8080
