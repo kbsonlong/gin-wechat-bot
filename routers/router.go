@@ -15,6 +15,7 @@ func InitRouter() gin.Engine {
 	apiv1 := r.Group("/api/v1")
 	{
 		apiv1.POST("/webhook", v1.Webhook)
+		apiv1.POST("/log_webhook", v1.LogWebhook)
 	}
 	return *r
 }
